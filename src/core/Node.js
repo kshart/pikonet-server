@@ -4,10 +4,12 @@ import State from './State'
 @State
 class Node {
   id = null
+  type = null
   channels = new Map()
 
-  constructor ({ id }) {
+  constructor ({ id, type }) {
     this.id = id
+    this.type = type
   }
 
   listChannel () {
@@ -35,20 +37,8 @@ class Node {
     return true
   }
 
-  migrateFrom () {
-    const canMigrate = await this.beforeMigrate()
-    if (!canMigrate) {
-      return false
-    }
-    const res = {
-      id: 1,
-      stateConfig: 1,
-      channels: []
-    }
-  }
-
-  migrateTo () {
-
+  async beforeMigrate () {
+    return true
   }
 
   init () {

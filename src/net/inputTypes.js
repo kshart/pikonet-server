@@ -34,5 +34,9 @@ export default {
   /**
    * Удалить просмотрщик канала у ноды
    */
-  NODE_CHANNEL_UNWATCH: 'NODE_CHANNEL_UNWATCH'
+  NODE_CHANNEL_UNWATCH: 'NODE_CHANNEL_UNWATCH',
+  /**
+   * Запросить миграцию ноды с текущего сервера
+   */
+  NODE_MIGRATE: 'NODE_MIGRATE'
 }

@@ -34,7 +34,7 @@ export default function (target, property, descriptor) {
       key: 'stateToConfig',
       placement: 'prototype',
       descriptor: {
-        value (config) {
+        value () {
           return this.state
         },
         configurable: false,

@@ -32,4 +32,13 @@ export default class {
   unwatch (client) {
     this.clients.delete(client)
   }
+
+  toJson () {
+    return {
+      id: this.id,
+      name: this.name,
+      data: this.data,
+      writable: this.writable
+    }
+  }
 }
