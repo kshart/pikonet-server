@@ -33,6 +33,15 @@ export default class {
         })
         break
       }
+      case outputTypes.NODE_MIGRATE: {
+        this.sendRaw({
+          type,
+          nodeConfig: data
+        })
+        break
+      }
+      default:
+        console.error(`Неопределенный тип исходящего пакета "${type}"`)
     }
   }
 
@@ -91,6 +100,18 @@ export default class {
         // this.send(null)
         break
       }
+      case inputTypes.NODE_MIGRATE: {
+        const { nodeId } = request
+        const nodeConfig = await global.nodeManager.migrateNode(nodeId)
+        if (nodeConfig === false) {
+          console.log('Ошибка миграции ноды')
+        } else {
+          this.send(outputTypes.NODE_MIGRATE, nodeConfig)
+        }
+        break
+      }
+      default:
+        console.error(`Неопределенный тип входящего пакета "${type}"`)
     }
   }
 }
