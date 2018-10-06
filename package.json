@@ -1,12 +1,12 @@
 {
-  "name": "calculate-net",
+  "name": "calculate-net-server",
   "version": "1.0.0",
-  "description": "Calculate net",
+  "description": "Calculate net server",
   "main": "index.js",
   "scripts": {
     "dev": "npx babel-watch index.js -w ./src",
     "build": "babel index.js -d dist -s",
-    "serve": "node dist/index.js",
+    "serve": "npx babel-node index.js",
     "test": "mocha --compilers js:babel-register"
   },
   "author": "kshart",
