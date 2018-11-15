@@ -1,9 +1,10 @@
 import inputTypes from './inputTypes'
 import outputTypes from './outputTypes'
+import nodes from '../nodes/index'
 
 export default class {
   constructor ({ socket }) {
-    console.log('create')
+    console.log('socket create')
     this.socket = socket
   }
 
@@ -11,11 +12,21 @@ export default class {
     for (let [, channel] of global.nodeManager.channels) {
       channel.clients.delete(this)
     }
-    console.log('destroy')
+    console.log('socket destroy')
   }
 
   send (type, data) {
     switch (type) {
+      case outputTypes.SERVER_HELLO: {
+        const { name, nodeTypeSupport, nodesCount } = data
+        this.sendRaw({
+          type,
+          name,
+          nodeTypeSupport,
+          nodesCount
+        })
+        break
+      }
       case outputTypes.NODE_LIST: {
         const { nodeIds } = data
         this.sendRaw({
@@ -52,9 +63,17 @@ export default class {
   }
 
   async handleRequest (request) {
-    console.log('handleRequest')
+    console.log('socket handle request')
     const { type } = request
     switch (type) {
+      case inputTypes.SERVER_CONNECT: {
+        this.send(outputTypes.SERVER_HELLO, {
+          name: 'me',
+          nodeTypeSupport: Object.keys(nodes),
+          nodesCount: global.nodeManager.nodes.size
+        })
+        break
+      }
       case inputTypes.NODE_LIST: {
         this.send(outputTypes.NODE_LIST, {
           nodeIds: Array.from(global.nodeManager.nodes.keys())

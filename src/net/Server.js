@@ -1,5 +1,5 @@
 import net from 'net'
-import Client from './Client'
+import SocketClient from './SocketClient'
 import NodeManager from '../core/NodeManager'
 
 export default class {
@@ -8,7 +8,7 @@ export default class {
     console.log(`Server start for "${processName}"`)
     global.nodeManager.run({ processName })
     const server = net.createServer(socket => {
-      const client = new Client({ socket })
+      const socketClient = new SocketClient({ socket })
       console.log('client connected')
       socket.setEncoding('utf8')
 
@@ -16,14 +16,14 @@ export default class {
       socket.on('data', async data => {
         try {
           const request = JSON.parse(data)
-          client.handleRequest(request)
+          socketClient.handleRequest(request)
         } catch (error) {
           console.error(error)
           socket.write('error')
         }
       })
       socket.on('drain', () => console.log('drain'))
-      socket.on('end', () => client.destroy())
+      socket.on('end', () => socketClient.destroy())
       socket.on('error', error => console.log(error))
       socket.on('lookup', (err, address, family, host) => console.log('lookup', err, address, family, host))
       socket.on('timeout', () => console.log('timeout'))

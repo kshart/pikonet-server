@@ -4,7 +4,7 @@
   "description": "Calculate net server",
   "main": "index.js",
   "scripts": {
-    "dev": "npx babel-watch index.js -w ./src",
+    "dev": "npx nodemon index.js",
     "build": "babel index.js -d dist -s",
     "serve": "npx babel-node index.js",
     "test": "mocha --compilers js:babel-register"
