@@ -1,4 +1,4 @@
-import Node from '../core/Node'
+import Node from '@/core/Node'
 
 export default class extends Node {
   constructor (config) {

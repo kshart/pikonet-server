@@ -1,12 +1,11 @@
 import net from 'net'
 import SocketClient from './SocketClient'
-import NodeManager from '../core/NodeManager'
+import nodeManager from '@/core/NodeManager'
 
 export default class {
   static run ({ processName = 'default' }) {
-    global.nodeManager = new NodeManager()
     console.log(`Server start for "${processName}"`)
-    global.nodeManager.run({ processName })
+    nodeManager.run({ processName })
     const server = net.createServer(socket => {
       const socketClient = new SocketClient({ socket })
       console.log('client connected')

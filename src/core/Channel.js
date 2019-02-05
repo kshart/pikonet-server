@@ -1,4 +1,4 @@
-import outputTypes from '../net/outputTypes'
+import outputTypes from '@/net/outputTypes'
 
 export default class {
   clients = new Set()

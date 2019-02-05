@@ -1,3 +1,4 @@
+import nodeManager from '@/core/NodeManager'
 import Channel from './Channel'
 import State from './State'
 
@@ -26,13 +27,13 @@ class Node {
       ...config
     })
     this.channels.set(channel.name, channel)
-    global.nodeManager.channels.set(channel.id, channel)
+    nodeManager.channels.set(channel.id, channel)
     return channel
   }
 
   removeChannel (name) {
     const { id } = this.channels.get(name)
-    global.nodeManager.channels.delete(id)
+    nodeManager.channels.delete(id)
     this.channels.delete(name)
     return true
   }

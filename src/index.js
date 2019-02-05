@@ -1,12 +1,13 @@
 
-import Server from './net/Server'
-import nodeConfig from './core/nodeConfig'
+import nodeConfig from '@/core/nodeConfig'
+import nodeManager from '@/core/NodeManager'
+import SocketServer from '@/net/SocketServer'
 
 const options = {}
-Server.run(options)
+SocketServer.run(options)
 
 nodeConfig.forEach(conf => {
-  const node = global.nodeManager.createNode(conf)
+  const node = nodeManager.createNode(conf)
   // const channel = node.channels.get('value')
   // let value = 0
   // setInterval(() => {

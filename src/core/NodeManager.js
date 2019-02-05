@@ -1,9 +1,12 @@
-import nodeTypes from '../nodes/index'
+import nodeTypes from '@/nodes/index'
 
-export default class {
+class NodeManager {
   nodes = new Map()
   channels = new Map()
 
+  /**
+   * @deprecated
+   */
   run ({ processName = 'default' }) {
     console.log(`NodeManager start for "${processName}"`)
   }
@@ -42,3 +45,5 @@ export default class {
     }
   }
 }
+
+export default new NodeManager()
