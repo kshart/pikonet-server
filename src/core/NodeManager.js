@@ -4,13 +4,6 @@ class NodeManager {
   nodes = new Map()
   channels = new Map()
 
-  /**
-   * @deprecated
-   */
-  run ({ processName = 'default' }) {
-    console.log(`NodeManager start for "${processName}"`)
-  }
-
   createNode (config) {
     if (!nodeTypes[config.type]) {
       return null
@@ -20,12 +13,12 @@ class NodeManager {
     return node
   }
 
-  async migrateNode (nodeId) {
+  migrateNode (nodeId) {
     const node = this.nodes.get(nodeId)
     if (!node) {
       return false
     }
-    const canMigrate = await node.beforeMigrate()
+    const canMigrate = node.beforeMigrate()
     if (!canMigrate) {
       return false
     }
@@ -34,13 +27,13 @@ class NodeManager {
     for (let [ id, channel ] of node.channels) {
       channels[id] = channel.toJson()
     }
+    const stateConfig = node.stateToConfig()
     node.remove()
     this.nodes.delete(nodeId)
-    // node to migration list
     return {
       id: nodeId,
       type: node.type,
-      stateConfig: node.stateToConfig(),
+      stateConfig,
       channels
     }
   }

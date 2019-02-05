@@ -1,11 +1,17 @@
+import net from 'net'
 import nodes from '@/nodes/index'
 import inputTypes from './inputTypes'
 import outputTypes from './outputTypes'
 import nodeManager from '@/core/NodeManager'
 
 export default class {
+  /**
+   * @type {net.Socket}
+   */
+  socket = null
+
   constructor ({ socket }) {
-    console.log('socket create')
+    console.log('socket create ' + socket.address())
     this.socket = socket
   }
 
@@ -20,7 +26,7 @@ export default class {
    * Отправить пакет
    */
   send (type, payload = {}) {
-    this.socket.send(
+    this.socket.write(
       JSON.stringify({
         ...payload,
         type
@@ -37,6 +43,16 @@ export default class {
     this[type](payload)
   }
 
+  /**
+   * @typedef {Object} SERVER_CONNECT_RESULT
+   * @property {String} name имя текущего сервера
+   * @property {Array<String>} nodeTypeSupport список доступных нод
+   * @property {Number} nodesCount колличество нод у сервера
+   */
+  /**
+   * Метод возвращает информацию о сервере
+   * @return {SERVER_CONNECT_RESULT}
+   */
   [inputTypes.SERVER_CONNECT] () {
     this.send(outputTypes.SERVER_HELLO, {
       name: 'me',

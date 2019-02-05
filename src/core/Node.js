@@ -1,8 +1,6 @@
 import nodeManager from '@/core/NodeManager'
 import Channel from './Channel'
-import State from './State'
 
-@State
 class Node {
   id = null
   type = null
@@ -38,8 +36,7 @@ class Node {
     return true
   }
 
-  async beforeMigrate () {
-    return true
+  beforeMigrate () {
   }
 
   init () {
@@ -53,9 +50,6 @@ class Node {
 
   stop () {
   }
-  // configToState () {
-  //   return 444
-  // }
 }
 
 export default Node
