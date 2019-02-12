@@ -1,41 +1,55 @@
 import nodeTypes from '@/nodes/index'
+import NodeComponent from './NodeComponent'
 
 class NodeManager {
   nodes = new Map()
-  channels = new Map()
 
   createNode (config) {
     if (!nodeTypes[config.type]) {
-      return null
+      return new Promise((resolve, reject) => reject(new Error(`Неопознаный тип ноды ${config.type}`)))
     }
-    const node = new nodeTypes[config.type](config)
+    if (this.nodes.has(config.id)) {
+      return new Promise((resolve, reject) => reject(new Error(`Нода "${config.id}" уже существует`)))
+    }
+    const node = nodeTypes[config.type](config)
     this.nodes.set(node.id, node)
-    return node
+    return new Promise((resolve, reject) => resolve(node))
+  }
+
+  removeNode (nodeId) {
+    const node = this.nodes.get(nodeId)
+    if (!node) {
+      return false
+    }
+    node.beforeRemove()
+    node.stop()
+    node.remove()
+    this.nodes.delete(nodeId)
   }
 
   migrateNode (nodeId) {
     const node = this.nodes.get(nodeId)
     if (!node) {
-      return false
+      return new Promise((resolve, reject) => reject(new Error('no node')))
     }
     const canMigrate = node.beforeMigrate()
     if (!canMigrate) {
-      return false
+      return new Promise((resolve, reject) => reject(new Error('no Migrate')))
     }
     node.stop()
-    const channels = {}
-    for (let [ id, channel ] of node.channels) {
-      channels[id] = channel.toJson()
-    }
     const stateConfig = node.stateToConfig()
     node.remove()
     this.nodes.delete(nodeId)
-    return {
+    return new Promise((resolve, reject) => resolve({
       id: nodeId,
       type: node.type,
-      stateConfig,
-      channels
-    }
+      stateConfig
+    }))
+  }
+
+  extend (componentConfig) {
+    console.log('extend')
+    return nodeConfig => new NodeComponent(nodeConfig, componentConfig)
   }
 }
 

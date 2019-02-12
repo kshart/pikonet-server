@@ -7,7 +7,7 @@ export default {
   /**
    * Список нод у текущего пула
    */
-  NODE_LIST: 'NODE_LIST',
+  NODE_GET_LIST: 'NODE_GET_LIST',
 
   /**
    * Добавить ноду в пул
@@ -20,6 +20,11 @@ export default {
   NODE_UPDATE: 'NODE_UPDATE',
 
   /**
+   * Запросить миграцию ноды с текущего сервера
+   */
+  NODE_MIGRATE: 'NODE_MIGRATE',
+
+  /**
    * Удалить ноду из пула
    */
   NODE_REMOVE: 'NODE_REMOVE',
@@ -27,7 +32,7 @@ export default {
   /**
    * Список каналов у ноды
    */
-  NODE_CHANNEL_LIST: 'NODE_CHANNEL_LIST',
+  NODE_GET_CHANNEL_LIST: 'NODE_GET_CHANNEL_LIST',
 
   /**
    * Прочитать канал у ноды
@@ -47,10 +52,5 @@ export default {
   /**
    * Удалить просмотрщик канала у ноды
    */
-  NODE_CHANNEL_UNWATCH: 'NODE_CHANNEL_UNWATCH',
-
-  /**
-   * Запросить миграцию ноды с текущего сервера
-   */
-  NODE_MIGRATE: 'NODE_MIGRATE'
+  NODE_CHANNEL_UNWATCH: 'NODE_CHANNEL_UNWATCH'
 }

@@ -1,6 +1,12 @@
 import outputTypes from '@/net/outputTypes'
+import SocketClient from '@/net/SocketClient'
 
-export default class {
+export default class Channel {
+  static channels = new Map()
+
+  /**
+   * @type {Set<SocketClient>}
+   */
   clients = new Set()
 
   constructor ({ node, name, writable = false, data = null }) {
@@ -8,6 +14,11 @@ export default class {
     this.name = name
     this.data = data
     this.writable = !!writable
+    Channel.channels.set(this.id, this)
+  }
+
+  destroy () {
+    Channel.channels.delete(this.id)
   }
 
   get () {
@@ -20,7 +31,10 @@ export default class {
     }
     this.data = data
     for (let client of this.clients) {
-      client.send(outputTypes.NODE_CHANNEL_UPDATE, { channel: this })
+      client.send(outputTypes.NODE_CHANNEL_UPDATE, {
+        id: this.id,
+        data
+      })
     }
   }
 

@@ -1,13 +1,19 @@
-import app from '../app'
-import supertest from 'supertest'
 
-const request = supertest.agent(app.listen())
+// const request = supertest.agent(app.listen())
 
-describe('Hello World', function () {
-  it('should say "Hello World"', function (done) {
-    request
-      .get('/')
-      .expect(200)
-      .expect('Hello World', done)
+describe('Hello World', () => {
+  it('test1', done => {
+    done()
+    // request
+    //   .get('/')
+    //   .expect(200)
+    //   .expect('Hello World', done)
+  })
+  it('test2', done => {
+    done()
+    // request
+    //   .get('/')
+    //   .expect(200)
+    //   .expect('Hello World', done)
   })
 })

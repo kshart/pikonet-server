@@ -1,8 +1,8 @@
-import net from 'net'
 import nodes from '@/nodes/index'
 import inputTypes from './inputTypes'
 import outputTypes from './outputTypes'
 import nodeManager from '@/core/NodeManager'
+import Channel from '@/core/Channel'
 
 export default class {
   /**
@@ -16,7 +16,7 @@ export default class {
   }
 
   destroy () {
-    for (let [, channel] of nodeManager.channels) {
+    for (let [, channel] of Channel.channels) {
       channel.clients.delete(this)
     }
     console.log('socket destroy')
@@ -46,7 +46,7 @@ export default class {
   /**
    * @typedef {Object} SERVER_CONNECT_RESULT
    * @property {String} name имя текущего сервера
-   * @property {Array<String>} nodeTypeSupport список доступных нод
+   * @property {Array<String>} nodeTypeSupport список доступных типов нод
    * @property {Number} nodesCount колличество нод у сервера
    */
   /**
@@ -60,47 +60,71 @@ export default class {
       nodesCount: nodeManager.nodes.size
     })
   }
-  [inputTypes.NODE_LIST] () {
+
+  /**
+   * Метод возвращает список id нод
+   * @return {Array<String>} список id доступных нод
+   */
+  [inputTypes.NODE_GET_LIST] () {
     this.send(outputTypes.NODE_LIST, {
       nodeIds: Array.from(nodeManager.nodes.keys())
     })
   }
-  [inputTypes.NODE_CHANNEL_LIST] ({ nodeId }) {
-    const node = nodeManager.nodes.get(nodeId)
-    this.send(node.listChannel())
+
+  /**
+   * Метод добавляет ноду в пул
+   */
+  [inputTypes.NODE_CREATE] ({ node }) {
+    nodeManager.createNode(node)
+      .then(node => node.start())
   }
-  [inputTypes.NODE_CHANNEL_READ] ({ nodeId, channelName }) {
-    const node = nodeManager.nodes.get(nodeId)
-    const channel = node.channels.get(channelName)
-    this.send(outputTypes.NODE_CHANNEL_UPDATE, { channel })
+
+  /**
+   * Метод удаляет ноду из пул
+   */
+  [inputTypes.NODE_REMOVE] ({ nodeId }) {
+    nodeManager.removeNode(nodeId)
   }
-  [inputTypes.NODE_CHANNEL_SEND] ({ nodeId, channelName, data }) {
+
+  /**
+   * Метод мигрирует ноду
+   */
+  [inputTypes.NODE_MIGRATE] ({ nodeId }) {
+    nodeManager.migrateNode(nodeId)
+      .then(nodeConf => console.log(nodeConf))
+      .catch(err => console.log(err))
+  }
+
+  [inputTypes.NODE_GET_CHANNEL_LIST] ({ nodeId }) {
     const node = nodeManager.nodes.get(nodeId)
-    const channel = node.channels.get(channelName)
+    this.send(outputTypes.NODE_CHANNEL_LIST, {
+      nodeId,
+      channels: node.listChannel()
+    })
+  }
+  [inputTypes.NODE_CHANNEL_READ] ({ channelId }) {
+    const channel = Channel.channels.get(channelId)
+    const { id, data } = channel
+    this.send(outputTypes.NODE_CHANNEL_UPDATE, { id, data })
+  }
+  [inputTypes.NODE_CHANNEL_SEND] ({ channelId, data }) {
+    const channel = Channel.channels.get(channelId)
     channel.set(data)
-    if (!channel.clients.has(this)) {
-      this.send(outputTypes.NODE_CHANNEL_UPDATE, { channel })
-    }
+    // if (!channel.clients.has(this)) {
+    //   const { id, data } = channel
+    //   // this.send(outputTypes.NODE_CHANNEL_UPDATE, { channel })
+    // }
   }
-  [inputTypes.NODE_CHANNEL_WATCH] ({ nodeId, channelName }) {
-    const node = nodeManager.nodes.get(nodeId)
-    const channel = node.channels.get(channelName)
+  [inputTypes.NODE_CHANNEL_WATCH] ({ channelId }) {
+    const channel = Channel.channels.get(channelId)
     channel.watch(this)
-    this.send(outputTypes.NODE_CHANNEL_UPDATE, { channel })
+    console.log(channel)
+    const { id, data } = channel
+    this.send(outputTypes.NODE_CHANNEL_UPDATE, { id, data })
   }
-  [inputTypes.NODE_CHANNEL_UNWATCH] ({ nodeId, channelName }) {
-    const node = nodeManager.nodes.get(nodeId)
-    const channel = node.channels.get(channelName)
+  [inputTypes.NODE_CHANNEL_UNWATCH] ({ channelId }) {
+    const channel = Channel.channels.get(channelId)
     channel.unwatch(this)
     // this.send(null)
-  }
-  [inputTypes.NODE_MIGRATE] ({ nodeId }) {
-    nodeManager.migrateNode(nodeId).then(nodeConfig => {
-      if (nodeConfig === false) {
-        console.log('Ошибка миграции ноды')
-      } else {
-        this.send(outputTypes.NODE_MIGRATE, { nodeConfig })
-      }
-    })
   }
 }

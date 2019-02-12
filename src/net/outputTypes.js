@@ -8,6 +8,9 @@ export default {
    */
   SERVER_HELLO: 'SERVER_HELLO',
   NODE_LIST: 'NODE_LIST',
+  /**
+   * Список каналов у ноды
+   */
   NODE_CHANNEL_LIST: 'NODE_CHANNEL_LIST',
   NODE_CHANNEL_UPDATE: 'NODE_CHANNEL_UPDATE',
   NODE_MIGRATE: 'NODE_MIGRATE'

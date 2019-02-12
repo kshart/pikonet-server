@@ -7,12 +7,13 @@
     "dev": "npx nodemon index.js",
     "build": "npx babel src -d dist -s",
     "serve": "npx babel-node index.js",
-    "test": "mocha --compilers js:babel-register"
+    "test": "mocha --require @babel/register"
   },
   "author": "kshart",
   "license": "MIT",
   "dependencies": {
     "babel-plugin-module-resolver": "^3.1.3",
+    "mocha": "^5.2.0",
     "mongodb": "^2.2.33"
   },
   "devDependencies": {
