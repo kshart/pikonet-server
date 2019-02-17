@@ -1,7 +1,7 @@
 import net from 'net'
 import SocketClient from './SocketClient'
 
-export default class {
+export default class SocketServer {
   static run ({ processName = 'default' }) {
     console.log(`Server start for "${processName}"`)
     const server = net.createServer(socket => {
@@ -15,7 +15,7 @@ export default class {
           const request = JSON.parse(data)
           socketClient.handleRequest(request)
         } catch (error) {
-          console.error(error)
+          console.error(error, data)
           socket.write('error')
         }
       })

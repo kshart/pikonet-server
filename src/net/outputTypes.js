@@ -6,12 +6,12 @@ export default {
    *   nodesCount: Number
    * }
    */
-  SERVER_HELLO: 'SERVER_HELLO',
-  NODE_LIST: 'NODE_LIST',
+  serverHello: 'serverHello',
+  nodeList: 'nodeList',
   /**
    * Список каналов у ноды
    */
-  NODE_CHANNEL_LIST: 'NODE_CHANNEL_LIST',
-  NODE_CHANNEL_UPDATE: 'NODE_CHANNEL_UPDATE',
-  NODE_MIGRATE: 'NODE_MIGRATE'
+  nodeChannelList: 'nodeChannelList',
+  nodeChannelUpdate: 'nodeChannelUpdate',
+  nodeMigrate: 'nodeMigrate'
 }

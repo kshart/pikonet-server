@@ -2,55 +2,55 @@ export default {
   /**
    * Входящее соединие от сервера
    */
-  SERVER_CONNECT: 'SERVER_CONNECT',
+  serverConnect: 'serverConnect',
 
   /**
    * Список нод у текущего пула
    */
-  NODE_GET_LIST: 'NODE_GET_LIST',
+  nodeGetList: 'nodeGetList',
 
   /**
    * Добавить ноду в пул
    */
-  NODE_CREATE: 'NODE_CREATE',
+  nodeCreate: 'nodeCreate',
 
   /**
    * Обновить конфигурацию ноды в пуле
    */
-  NODE_UPDATE: 'NODE_UPDATE',
+  nodeUpdate: 'nodeUpdate',
 
   /**
    * Запросить миграцию ноды с текущего сервера
    */
-  NODE_MIGRATE: 'NODE_MIGRATE',
+  nodeMigrate: 'nodeMigrate',
 
   /**
    * Удалить ноду из пула
    */
-  NODE_REMOVE: 'NODE_REMOVE',
+  nodeRemove: 'nodeRemove',
 
   /**
    * Список каналов у ноды
    */
-  NODE_GET_CHANNEL_LIST: 'NODE_GET_CHANNEL_LIST',
+  nodeGetChannelList: 'nodeGetChannelList',
 
   /**
    * Прочитать канал у ноды
    */
-  NODE_CHANNEL_READ: 'NODE_CHANNEL_READ',
+  nodeChannelRead: 'nodeChannelRead',
 
   /**
    * Записать в канал у ноды
    */
-  NODE_CHANNEL_SEND: 'NODE_CHANNEL_SEND',
+  nodeChannelSend: 'nodeChannelSend',
 
   /**
    * Зарегистрировать просмотрщик канала у ноды
    */
-  NODE_CHANNEL_WATCH: 'NODE_CHANNEL_WATCH',
+  nodeChannelWatch: 'nodeChannelWatch',
 
   /**
    * Удалить просмотрщик канала у ноды
    */
-  NODE_CHANNEL_UNWATCH: 'NODE_CHANNEL_UNWATCH'
+  nodeChannelUnwatch: 'nodeChannelUnwatch'
 }
