@@ -1,3 +1,7 @@
+/**
+ * @author Артём Каширин <kshart@yandex.ru>
+ * @fileoverview Module
+ */
 import nodes from '@/nodes/index'
 import inputTypes from './inputTypes'
 import outputTypes from './outputTypes'
@@ -5,22 +9,28 @@ import nodeManager from '@/core/NodeManager'
 import Channel from '@/core/Channel'
 
 /**
- * @module net-server/net
- */
-/**
  * Класс предназначен для общения по сокету с клиентами.
+ * @requires module:core.Channel
+ * @requires module:core.NodeManager
+ * @memberof module:net
  */
-class SocketClient {
+class Client {
   /**
-   * @type {net.Socket}
+   * Конструктор клиента для соединения по сокету.
+   * @param {Object} config
+   * @param {external:"net.Socket"} config.socket
    */
-  socket = null
-
   constructor ({ socket }) {
     console.log('socket create ' + socket.address())
+    /**
+     * @type {external:"net.Socket"}
+     */
     this.socket = socket
   }
 
+  /**
+   * Деструктор клиента.
+   */
   destroy () {
     for (let [, channel] of Channel.channels) {
       channel.clients.delete(this)
@@ -44,10 +54,9 @@ class SocketClient {
 
   /**
    * Обработать запрос
-   * @param {Object} request тело запроса
+   * @param {module:net.Request} request тело запроса
    */
-  handleRequest (request) {
-    const { type, payload } = request
+  handleRequest ({ type, payload }) {
     const method = 'on' + type.capitalize()
     if (typeof this[method] === 'function') {
       this[method](payload)
@@ -57,14 +66,8 @@ class SocketClient {
   }
 
   /**
-   * @typedef {Object} SERVER_CONNECT_RESULT
-   * @property {String} name имя текущего сервера
-   * @property {Array<String>} nodeTypeSupport список доступных типов нод
-   * @property {Number} nodesCount колличество нод у сервера
-   */
-  /**
    * Метод возвращает информацию о сервере
-   * @return {SERVER_CONNECT_RESULT}
+   * @see module:net.SERVER_CONNECT_RESULT
    */
   onServerConnect () {
     this.send(outputTypes.serverHello, {
@@ -76,7 +79,7 @@ class SocketClient {
 
   /**
    * Метод возвращает список id нод
-   * @return {Array.<String>} список id доступных нод
+   * @return {Array<String>} список id доступных нод
    */
   onNodeGetList () {
     this.send(outputTypes.nodeList, {
@@ -142,4 +145,4 @@ class SocketClient {
   }
 }
 
-export default SocketClient
+export default Client

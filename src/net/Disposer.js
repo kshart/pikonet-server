@@ -1,11 +1,19 @@
+/**
+ * @author Артём Каширин <kshart@yandex.ru>
+ * @fileoverview Module
+ */
 import net from 'net'
-import SocketClient from './SocketClient'
+import Client from './Client'
 
-export default class SocketServer {
+/**
+ * Класс для управления клиентами
+ * @memberof module:net
+ */
+class Disposer {
   static run ({ processName = 'default' }) {
     console.log(`Server start for "${processName}"`)
     const server = net.createServer(socket => {
-      const socketClient = new SocketClient({ socket })
+      const client = new Client({ socket })
       console.log('client connected')
       socket.setEncoding('utf8')
 
@@ -13,14 +21,14 @@ export default class SocketServer {
       socket.on('data', async data => {
         try {
           const request = JSON.parse(data)
-          socketClient.handleRequest(request)
+          client.handleRequest(request)
         } catch (error) {
           console.error(error, data)
           socket.write('error')
         }
       })
       socket.on('drain', () => console.log('drain'))
-      socket.on('end', () => socketClient.destroy())
+      socket.on('end', () => client.destroy())
       socket.on('error', error => console.log(error))
       socket.on('lookup', (err, address, family, host) => console.log('lookup', err, address, family, host))
       socket.on('timeout', () => console.log('timeout'))
@@ -37,3 +45,5 @@ export default class SocketServer {
     )
   }
 }
+
+export default Disposer

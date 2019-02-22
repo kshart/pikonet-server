@@ -1,26 +1,53 @@
+/**
+ * @author Артём Каширин <kshart@yandex.ru>
+ * @fileoverview Module
+ */
 import outputTypes from '@/net/outputTypes'
 
 /**
+ * Конфигурация для создания канала.
+ * @typedef {Object} ChannelConfig
+ * @prop {module:core.NodeComponent} node - Нода для которой создается канал.
+ * @prop {string}  name - Имя канала.
+ * @prop {boolean} writable - Доступ на запись.
+ * @prop {Object}  data - Данные.
+ * @memberof module:core
+ */
+
+/**
  * Канал - способ общения между нодами.
+ * @requires module:net.Client
+ * @memberof module:core
  */
 export default class Channel {
   static channels = new Map()
 
   /**
-   * @type {Set<net.SocketClient>}
-   */
-  clients = new Set()
-
-  /**
-   * @param {number} x - The x value.
-   * @param {number} y - The y value.
-   * @param {number} width - The width of the dot, in pixels.
+   * @param {module:core.ChannelConfig} config - Конфигурация канала.
    */
   constructor ({ node, name, writable = false, data = null }) {
     this.id = `${node.id}/${name}`
+    /**
+     * Имя канала.
+     * @type {string}
+     */
     this.name = name
+    /**
+     * Данные.
+     * @type {Object}
+     */
     this.data = data
+    /**
+     * Доступ на запись.
+     * @type {boolean}
+     */
     this.writable = !!writable
+    /**
+     * Список клиентов подписаных на обновление канала.
+     * @type {Set<module:net.Client>}
+     */
+    this.clients = new Set()
+
     Channel.channels.set(this.id, this)
   }
 
@@ -56,7 +83,7 @@ export default class Channel {
 
   /**
    * Подписка на изменение данных в канале
-   * @param {net.SocketClient} client внешний клиент
+   * @param {module:net.Client} client внешний клиент
    */
   watch (client) {
     this.clients.add(client)
@@ -65,7 +92,7 @@ export default class Channel {
 
   /**
    * Отписка от изменения данных в канале
-   * @param {net.SocketClient} client внешний клиент
+   * @param {module:net.Client} client внешний клиент
    */
   unwatch (client) {
     this.clients.delete(client)

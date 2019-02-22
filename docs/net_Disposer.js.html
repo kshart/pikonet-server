@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Source: net/outputTypes.js | Pikonet Server</title>
+    <title>Source: net/Disposer.js | Pikonet Server</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -47,24 +47,54 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * @module net/outputTypes
+ * @author Артём Каширин &lt;kshart@yandex.ru>
+ * @fileoverview Module
  */
-export default {
-  /**
-   * @typedef {Object} module:net/outputTypes.serverHello
-   * @property {String} name имя текущего сервера
-   * @property {Array&lt;String>} nodeTypeSupport список доступных типов нод
-   * @property {Number} nodesCount колличество нод у сервера
-   */
-  serverHello: 'serverHello',
-  nodeList: 'nodeList',
-  /**
-   * Список каналов у ноды
-   */
-  nodeChannelList: 'nodeChannelList',
-  nodeChannelUpdate: 'nodeChannelUpdate',
-  nodeMigrate: 'nodeMigrate'
+import net from 'net'
+import Client from './Client'
+
+/**
+ * Класс для управления клиентами
+ * @memberof module:net
+ */
+class Disposer {
+  static run ({ processName = 'default' }) {
+    console.log(`Server start for "${processName}"`)
+    const server = net.createServer(socket => {
+      const client = new Client({ socket })
+      console.log('client connected')
+      socket.setEncoding('utf8')
+
+      socket.on('connect', () => console.log('connect'))
+      socket.on('data', async data => {
+        try {
+          const request = JSON.parse(data)
+          client.handleRequest(request)
+        } catch (error) {
+          console.error(error, data)
+          socket.write('error')
+        }
+      })
+      socket.on('drain', () => console.log('drain'))
+      socket.on('end', () => client.destroy())
+      socket.on('error', error => console.log(error))
+      socket.on('lookup', (err, address, family, host) => console.log('lookup', err, address, family, host))
+      socket.on('timeout', () => console.log('timeout'))
+    }).on('error', err => {
+      throw err
+    })
+
+    server.listen(
+      {
+        port: 69,
+        host: '127.0.0.1'
+      },
+      () => console.log('opened server on', server.address())
+    )
+  }
 }
+
+export default Disposer
 </code></pre>
         </article>
     </section>

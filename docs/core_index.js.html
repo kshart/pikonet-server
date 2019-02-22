@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Source: net/outputTypes.js | Pikonet Server</title>
+    <title>Source: core/index.js | Pikonet Server</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -47,24 +47,11 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * @module net/outputTypes
+ * @author Артём Каширин &lt;kshart@yandex.ru>
  */
-export default {
-  /**
-   * @typedef {Object} module:net/outputTypes.serverHello
-   * @property {String} name имя текущего сервера
-   * @property {Array&lt;String>} nodeTypeSupport список доступных типов нод
-   * @property {Number} nodesCount колличество нод у сервера
-   */
-  serverHello: 'serverHello',
-  nodeList: 'nodeList',
-  /**
-   * Список каналов у ноды
-   */
-  nodeChannelList: 'nodeChannelList',
-  nodeChannelUpdate: 'nodeChannelUpdate',
-  nodeMigrate: 'nodeMigrate'
-}
+/**
+ * @module core
+ */
 </code></pre>
         </article>
     </section>

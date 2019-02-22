@@ -1,9 +1,10 @@
 {
+  "sourceType": "module",
   "tags": {
     "allowUnknownTags": false
   },
   "source": {
-    "include": "./src",
+    "include": ["./src", "./README.md"],
     "includePattern": ".js$"
   },
   "plugins": [
@@ -11,13 +12,15 @@
     "node_modules/jsdoc-babel"
   ],
   "opts": {
-    "template": "node_modules/docdash",
+    "template": "node_modules/tui-jsdoc-template",
     "encoding": "utf8",
     "destination": "docs/",
     "recurse": true,
     "verbose": true
   },
   "templates": {
+    "name": "Pikonet Server",
+    "footerText": "Pikonet Server",
     "cleverLinks": false,
     "monospaceLinks": false
   }
