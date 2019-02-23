@@ -18,7 +18,7 @@ class Disposer {
       socket.setEncoding('utf8')
 
       socket.on('connect', () => console.log('connect'))
-      socket.on('data', async data => {
+      socket.on('data', data => {
         try {
           const request = JSON.parse(data)
           client.handleRequest(request)
