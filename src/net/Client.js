@@ -15,17 +15,43 @@ import Channel from '@/core/Channel'
  * @memberof module:net
  */
 class Client {
+  static delimiter = '\n'
   /**
    * Конструктор клиента для соединения по сокету.
    * @param {Object} config
    * @param {external:"net.Socket"} config.socket
    */
   constructor ({ socket }) {
-    console.log('socket create ' + socket.address())
     /**
      * @type {external:"net.Socket"}
      */
     this.socket = socket
+    /**
+     * Сырые данные из сокета
+     */
+    this._rawDataFromSocket = null
+    console.log('socket create ' + socket.address())
+    socket.setEncoding('utf8')
+      .on('connect', () => console.log('connect'))
+      .on('data', chunk => {
+        const buffer = this._rawDataFromSocket !== null ? this._rawDataFromSocket + chunk : chunk
+        const requests = buffer.split(Client.delimiter)
+        if (requests.length === 1) {
+          this._rawDataFromSocket = requests[0]
+        } else if (requests.length > 1) {
+          for (let i = 0; i < requests.length - 1; ++i) {
+            this.handleRequest(requests[i])
+          }
+          if (requests[requests.length - 1] !== '') {
+            this._rawDataFromSocket = requests[requests.length - 1]
+          }
+        }
+      })
+      .on('drain', () => console.log('drain'))
+      .on('end', () => this.destroy())
+      .on('error', error => console.log(error))
+      .on('lookup', (err, address, family, host) => console.log('lookup', err, address, family, host))
+      .on('timeout', () => console.log('timeout'))
   }
 
   /**
@@ -48,21 +74,38 @@ class Client {
       JSON.stringify({
         payload,
         type
-      })
+      }) + Client.delimiter
     )
   }
 
   /**
    * Обработать запрос
-   * @param {module:net.Request} request тело запроса
+   * @param {String} request Запрос.
    */
-  handleRequest ({ type, payload }) {
-    const method = 'on' + type.capitalize()
-    if (typeof this[method] === 'function') {
-      this[method](payload)
-    } else {
-      console.log(`Метод "${method}" не найден`)
+  handleRequest (request) {
+    if (request.length <= 0) {
+      console.log('empty')
+      return
     }
+    try {
+      let { type, payload } = JSON.parse(request)
+      const method = 'on' + type.capitalize()
+      if (typeof this[method] === 'function') {
+        this[method](payload)
+      } else {
+        console.log(`Метод "${method}" не найден`)
+      }
+    } catch (error) {
+      console.error(error, request)
+      this.send('error')
+    }
+  }
+
+  /**
+   * Ошибка
+   */
+  onError () {
+    console.log('error')
   }
 
   /**
