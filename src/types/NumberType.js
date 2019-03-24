@@ -1,6 +1,24 @@
 import ValueType from './ValueType'
 
-export default class extends ValueType {
-  value
-  time
+/**
+ * Числовой типов данных
+ * @memberof types
+ * @author Артём Каширин <kshart@yandex.ru>
+ */
+export default class NumberType extends ValueType {
+  constructor ({ value, time }) {
+    super()
+
+    /**
+     * Значение.
+     * @type {Number}
+     */
+    this.value = value
+
+    /**
+     * Время изменения значения.
+     * @type {Date}
+     */
+    this.time = time
+  }
 }

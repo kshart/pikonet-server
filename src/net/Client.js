@@ -1,57 +1,29 @@
-/**
- * @author Артём Каширин <kshart@yandex.ru>
- * @fileoverview Module
- */
 import nodes from '@/nodes/index'
-import inputTypes from './inputTypes'
+import Channel from '@/core/Channel'
 import outputTypes from './outputTypes'
 import nodeManager from '@/core/NodeManager'
-import Channel from '@/core/Channel'
+import EventEmitter from 'events'
 
 /**
  * Класс предназначен для общения по сокету с клиентами.
- * @requires module:core.Channel
- * @requires module:core.NodeManager
- * @memberof module:net
+ * @requires core.Channel
+ * @requires core.NodeManager
+ * @memberof net
+ * @author Артём Каширин <kshart@yandex.ru>
  */
-class Client {
-  static delimiter = '\n'
-  /**
-   * Конструктор клиента для соединения по сокету.
-   * @param {Object} config
-   * @param {external:"net.Socket"} config.socket
-   */
-  constructor ({ socket }) {
+export default class Client extends EventEmitter {
+  constructor ({ connection }) {
+    super()
     /**
-     * @type {external:"net.Socket"}
+     * @type {net.connections.Connection}
      */
-    this.socket = socket
-    /**
-     * Сырые данные из сокета
-     */
-    this._rawDataFromSocket = null
-    console.log('socket create ' + socket.address())
-    socket.setEncoding('utf8')
+    this.connection = connection
+    this.lastResposeId = 0
+    connection
       .on('connect', () => console.log('connect'))
-      .on('data', chunk => {
-        const buffer = this._rawDataFromSocket !== null ? this._rawDataFromSocket + chunk : chunk
-        const requests = buffer.split(Client.delimiter)
-        if (requests.length === 1) {
-          this._rawDataFromSocket = requests[0]
-        } else if (requests.length > 1) {
-          for (let i = 0; i < requests.length - 1; ++i) {
-            this.handleRequest(requests[i])
-          }
-          if (requests[requests.length - 1] !== '') {
-            this._rawDataFromSocket = requests[requests.length - 1]
-          }
-        }
-      })
-      .on('drain', () => console.log('drain'))
-      .on('end', () => this.destroy())
+      .on('message', message => this.handleRequest(message))
+      .on('close', () => this.destroy())
       .on('error', error => console.log(error))
-      .on('lookup', (err, address, family, host) => console.log('lookup', err, address, family, host))
-      .on('timeout', () => console.log('timeout'))
   }
 
   /**
@@ -61,43 +33,35 @@ class Client {
     for (let [, channel] of Channel.channels) {
       channel.clients.delete(this)
     }
-    console.log('socket destroy')
+    console.log('Client destroy')
   }
 
   /**
    * Отправить пакет
-   * @param {String} type тип пакета
-   * @param {Object} payload "полезная нагрузка", зависит от типа пакета
+   * @param {String} method - Тип пакета.
+   * @param {Object} params - "полезная нагрузка", зависит от типа пакета.
+   * @param {String} requestId - ID запроса, для которого предназначен этот ответ.
    */
-  send (type, payload = {}) {
-    this.socket.write(
-      JSON.stringify({
-        payload,
-        type
-      }) + Client.delimiter
-    )
+  send (method, params = {}, requestId = null) {
+    this.lastResposeId++
+    this.connection.send({
+      id: this.lastResposeId,
+      requestId,
+      method,
+      params
+    })
   }
 
   /**
    * Обработать запрос
-   * @param {String} request Запрос.
+   * @param {Object} request Запрос.
    */
-  handleRequest (request) {
-    if (request.length <= 0) {
-      console.log('empty')
-      return
-    }
-    try {
-      let { type, payload } = JSON.parse(request)
-      const method = 'on' + type.capitalize()
-      if (typeof this[method] === 'function') {
-        this[method](payload)
-      } else {
-        console.log(`Метод "${method}" не найден`)
-      }
-    } catch (error) {
-      console.error(error, request)
-      this.send('error')
+  handleRequest ({ id, requestId, method, params }) {
+    const methodName = 'on' + method.capitalize()
+    if (typeof this[methodName] === 'function') {
+      this[methodName](params, { id, requestId })
+    } else {
+      console.log(`Метод "${methodName}" не найден`)
     }
   }
 
@@ -121,7 +85,7 @@ class Client {
   }
 
   /**
-   * Метод возвращает список id нод
+   * Метод возвращает список id нод.
    * @return {Array<String>} список id доступных нод
    */
   onNodeGetList () {
@@ -131,11 +95,18 @@ class Client {
   }
 
   /**
-   * Метод добавляет ноду в пул
+   * Метод добавляет ноду в пул.
    */
   onNodeCreate ({ node }) {
     nodeManager.createNode(node)
       .then(node => node.start())
+  }
+
+  /**
+   * Обновить конфигурацию ноды.
+   */
+  onNodeUpdate ({ node }) {
+    console.warn('Нет реализации')
   }
 
   /**
@@ -146,7 +117,7 @@ class Client {
   }
 
   /**
-   * Метод мигрирует ноду
+   * Метод мигрирует ноду.
    */
   onNodeMigrate ({ nodeId }) {
     nodeManager.migrateNode(nodeId)
@@ -154,18 +125,20 @@ class Client {
       .catch(err => console.log(err))
   }
 
-  onNodeGetChannelList ({ nodeId }) {
+  onNodeGetChannelList ({ nodeId }, { id }) {
     const node = nodeManager.nodes.get(nodeId)
     this.send(outputTypes.nodeChannelList, {
       nodeId,
       channels: node.listChannel()
-    })
+    }, id)
   }
+
   onNodeChannelRead ({ channelId }) {
     const channel = Channel.channels.get(channelId)
     const { id, data } = channel
     this.send(outputTypes.nodeChannelUpdate, { id, data })
   }
+
   onNodeChannelSend ({ channelId, data }) {
     const channel = Channel.channels.get(channelId)
     channel.set(data)
@@ -174,6 +147,7 @@ class Client {
     //   // this.send(outputTypes.nodeChannelUpdate, { channel })
     // }
   }
+
   onNodeChannelWatch ({ channelId }) {
     const channel = Channel.channels.get(channelId)
     channel.watch(this)
@@ -181,11 +155,10 @@ class Client {
     const { id, data } = channel
     this.send(outputTypes.nodeChannelUpdate, { id, data })
   }
+
   onNodeChannelUnwatch ({ channelId }) {
     const channel = Channel.channels.get(channelId)
     channel.unwatch(this)
     // this.send(null)
   }
 }
-
-export default Client

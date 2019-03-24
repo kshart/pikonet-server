@@ -1,37 +1,68 @@
-/**
- * @author Артём Каширин <kshart@yandex.ru>
- * @fileoverview Module
- */
 import net from 'net'
+import http from 'http'
+import { server as WebSocketServer } from 'websocket'
 import Client from './Client'
+import SocketConnection from './connections/SocketConnection'
+import WebSocketConnection from './connections/WebSocketConnection'
 
 /**
  * Класс для управления клиентами
- * @memberof module:net
+ * @requires core.Client
+ * @memberof net
+ * @author Артём Каширин <kshart@yandex.ru>
  */
 export default class Disposer {
-  /**
-   * Клиенты.
-   * @type {Set<module:net.Client>}
-   */
-  static clients = new Set()
+  constructor ({ processName = 'default' }) {
+    /**
+     * Клиенты.
+     * @type {Set<net.Client>}
+     */
+    this.clients = new Set()
 
-  static run ({ processName = 'default' }) {
-    console.log(`Server start for "${processName}"`)
-    const server = net.createServer(socket => {
-      const client = new Client({ socket })
+    this.processName = processName
+
+    this.socketServer = net.createServer(socket => {
+      const client = new Client({
+        connection: new SocketConnection({ socket })
+      })
+      client.on('close', () => this.clients.delete(client))
       this.clients.add(client)
-      // TODO: Освобождение ресурсов
     }).on('error', err => {
       throw err
     })
 
-    server.listen(
+    this.httpServer = http.createServer((request, response) => {})
+
+    this.wsServer = new WebSocketServer({ httpServer: this.httpServer })
+      .on('request', request => {
+        const wSocket = request.accept(null, request.origin)
+        const connection = new WebSocketConnection({ wSocket })
+        const client = new Client({ connection })
+        client.on('close', () => this.clients.delete(client))
+        this.clients.add(client)
+      })
+  }
+
+  run () {
+    this.socketServer.listen(
       {
         port: 69,
         host: '127.0.0.1'
       },
-      () => console.log('opened server on', server.address())
+      () => console.log(`Socket сервер запущен.`, this.socketServer.address())
     )
+    this.httpServer.listen(
+      {
+        port: 169,
+        host: '127.0.0.1'
+      },
+      () => console.log(`WebSocket сервер запущен.`, this.httpServer.address())
+    )
+  }
+
+  stop () {
+    this.wsServer.shutDown()
+    this.httpServer.close()
+    this.socketServer.close()
   }
 }

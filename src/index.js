@@ -4,4 +4,6 @@ import Disposer from '@/net/Disposer'
 String.prototype.capitalize = function () {
   return this.charAt(0).toUpperCase() + this.slice(1)
 }
-Disposer.run({})
+
+const disposer = new Disposer({})
+disposer.run()

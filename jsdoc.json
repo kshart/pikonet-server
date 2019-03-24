@@ -14,7 +14,7 @@
   "opts": {
     "template": "node_modules/tui-jsdoc-template",
     "encoding": "utf8",
-    "destination": "docs/",
+    "destination": "doc/",
     "recurse": true,
     "verbose": true
   },

@@ -1,38 +1,27 @@
-/**
- * @author Артём Каширин <kshart@yandex.ru>
- * @fileoverview Module
- */
 import Channel from './Channel'
-
-const defineReadOnlyProp = (object, propName, value) => {
-  Object.defineProperty(object, propName, {
-    configurable: false,
-    writable: false,
-    value
-  })
-}
 
 /**
  * Конфигурация для создания ноды.
  * @typedef {Object} NodeConfig
- * @prop {string} id - ID ноды.
- * @prop {string} type - Тип ноды.
- * @memberof module:core
+ * @prop {String} id - ID ноды.
+ * @prop {String} type - Тип ноды.
+ * @memberof core
  */
 
 /**
  * Шаблон для нод
- * @requires module:core.Channel
- * @memberof module:core
+ * @requires core.Channel
+ * @memberof core
+ * @author Артём Каширин <kshart@yandex.ru>
  */
 export default class NodeComponent {
   /**
    * Конструктор ноды
-   * @param {module:core.NodeConfig} nodeConfig - Конфигурация ноды.
-   * @param {module:core.NodeComponentConfig} componentConfig - Конфигурация компонента.
+   * @param {core.NodeConfig} nodeConfig - Конфигурация ноды.
    */
-  constructor (nodeConfig, componentConfig) {
+  constructor (nodeConfig) {
     console.log('NodeComponent')
+
     /**
      * ID ноды
      * @type {String}
@@ -41,31 +30,21 @@ export default class NodeComponent {
 
     /**
      * Тип ноды.
-     * Список доступных типов нод @see ass
+     * Список доступных типов нод @see авы
      * @type {String}
      */
     this.type = nodeConfig.type
 
     /**
-     * Конфигурация ноды.
-     * @type {Object}
-     */
-    this.config = nodeConfig
-
-    /**
      * Список каналов у ноды.
-     * @type {Map<module:core.Channel>}
+     * @type {Map<core.Channel>}
      */
     this.channels = new Map()
-    for (let key in componentConfig) {
-      this[key] = componentConfig[key]
-    }
-    this.init(nodeConfig)
   }
 
   /**
    * Список каналов у ноды.
-   * @return {Array<{ name: string, id:string }>}
+   * @return {Array<{ name: String, id:String }>}
    */
   listChannel () {
     const result = []
@@ -77,8 +56,8 @@ export default class NodeComponent {
 
   /**
    * Создать новый канал у ноды.
-   * @param {module:core.ChannelConfig} config - Конфигурация ноды.
-   * @return {module:core.Channel}
+   * @param {core.ChannelConfig} config - Конфигурация ноды.
+   * @return {core.Channel}
    */
   createChannel (config) {
     const channel = new Channel({
@@ -92,7 +71,7 @@ export default class NodeComponent {
 
   /**
    * Удалить канал.
-   * @param {string} name - Имя канала
+   * @param {String} name - Имя канала
    */
   removeChannel (name) {
     const channel = this.channels.get(name)
@@ -125,7 +104,7 @@ export default class NodeComponent {
    * Хук вызывается перед миграцией
    *  true - продолжить миграцию
    *  false - прервать миграцию
-   * @return {boolean}
+   * @return {Boolean}
    */
   beforeMigrate () {
     return true

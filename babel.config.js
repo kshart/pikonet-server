@@ -21,6 +21,5 @@ module.exports = {
         }
       }
     ]
-  ],
-  sourceMaps: false
+  ]
 }
