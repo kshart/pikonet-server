@@ -8,12 +8,12 @@
     "build": "npx babel src -d dist -s",
     "serve": "npx babel-node --inspect=9223 src/index.js",
     "test": "mocha --require @babel/register",
-    "generate-doc": "npx rimraf doc && npx jsdoc -c jsdoc.json"
+    "generate-docs": "npx rimraf docs && npx jsdoc -c jsdoc.json"
   },
   "author": "kshart",
   "license": "MIT",
   "directories": {
-    "doc": "./doc"
+    "doc": "./docs"
   },
   "files": [
     "dist"

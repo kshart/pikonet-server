@@ -1,0 +1,168 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Source: core/NodeManager.js | Pikonet Server</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-jsdoc.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/tui-doc.css">
+
+    
+</head>
+<body>
+<nav class="lnb" id="lnb">
+    <div class="logo" style="">
+        
+            <img src="img/toast-ui.png" width="100%" height="100%">
+        
+    </div>
+    <div class="title">
+        <h1><a href="index.html" class="link">Pikonet Server</a></h1>
+        
+    </div>
+    <div class="search-container" id="search-container">
+        <input type="text" placeholder="Search">
+        <ul></ul>
+    </div>
+    
+    <div class="lnb-api hidden"><h3>Modules</h3><ul><li><a href="module-core.html">core</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="module:core_sub"><div class="member-type">Typedef</div><ul class="inner"><li><a href="module-core.html#.ChannelConfig">ChannelConfig</a></li><li><a href="module-core.html#.NodeConfig">NodeConfig</a></li></ul></div></li><li><a href="module-net.html">net</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="module:net_sub"></div></li><li><a href="module-net_outputTypes.html">net/outputTypes</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="module:net/outputTypes_sub"><div class="member-type">Typedef</div><ul class="inner"><li><a href="module-net_outputTypes.html#.serverHello">serverHello</a></li></ul></div></li></ul></div><div class="lnb-api hidden"><h3>Externals</h3><ul><li><a href="external-_net.Socket_.html">net.Socket</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="external:_net.Socket__sub"></div></li><li><a href="external-net.html">net</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="external:net_sub"></div></li></ul></div><div class="lnb-api hidden"><h3>Classes</h3><ul><li><a href="module-core.Channel.html">Channel</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="module:core.Channel_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="module-core.Channel.html#clients">clients</a></li><li><a href="module-core.Channel.html#data">data</a></li><li><a href="module-core.Channel.html#name">name</a></li><li><a href="module-core.Channel.html#writable">writable</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="module-core.Channel.html#destroy">destroy</a></li><li><a href="module-core.Channel.html#get">get</a></li><li><a href="module-core.Channel.html#set">set</a></li><li><a href="module-core.Channel.html#unwatch">unwatch</a></li><li><a href="module-core.Channel.html#watch">watch</a></li></ul></div></li><li><a href="module-core.NodeComponent.html">NodeComponent</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="module:core.NodeComponent_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="module-core.NodeComponent.html#channels">channels</a></li><li><a href="module-core.NodeComponent.html#config">config</a></li><li><a href="module-core.NodeComponent.html#id">id</a></li><li><a href="module-core.NodeComponent.html#type">type</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="module-core.NodeComponent.html#beforeMigrate">beforeMigrate</a></li><li><a href="module-core.NodeComponent.html#channelsToConfig">channelsToConfig</a></li><li><a href="module-core.NodeComponent.html#createChannel">createChannel</a></li><li><a href="module-core.NodeComponent.html#listChannel">listChannel</a></li><li><a href="module-core.NodeComponent.html#removeChannel">removeChannel</a></li><li><a href="module-core.NodeComponent.html#stateToConfig">stateToConfig</a></li></ul></div></li><li><a href="module-core.NodeManager.html">NodeManager</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="module:core.NodeManager_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="module-core.NodeManager.html#nodes">nodes</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="module-core.NodeManager.html#createNode">createNode</a></li><li><a href="module-core.NodeManager.html#extend">extend</a></li><li><a href="module-core.NodeManager.html#migrateNode">migrateNode</a></li><li><a href="module-core.NodeManager.html#removeNode">removeNode</a></li></ul></div></li><li><a href="module-net.Client.html">Client</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="module:net.Client_sub"><div class="member-type">Members</div><ul class="inner"><li><a href="module-net.Client.html#socket">socket</a></li></ul><div class="member-type">Methods</div><ul class="inner"><li><a href="module-net.Client.html#destroy">destroy</a></li><li><a href="module-net.Client.html#handleRequest">handleRequest</a></li><li><a href="module-net.Client.html#onNodeCreate">onNodeCreate</a></li><li><a href="module-net.Client.html#onNodeGetList">onNodeGetList</a></li><li><a href="module-net.Client.html#onNodeMigrate">onNodeMigrate</a></li><li><a href="module-net.Client.html#onNodeRemove">onNodeRemove</a></li><li><a href="module-net.Client.html#onServerConnect">onServerConnect</a></li><li><a href="module-net.Client.html#send">send</a></li></ul></div></li><li><a href="module-net.Disposer.html">Disposer</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="module:net.Disposer_sub"></div></li></ul></div>
+</nav>
+<div id="resizer"></div>
+
+<div class="main" id="main">
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @author Артём Каширин &lt;kshart@yandex.ru>
+ * @fileoverview Module
+ */
+import nodeTypes from '@/nodes/index'
+import NodeComponent from './NodeComponent'
+
+/**
+ * Класс для управления нодами
+ * @requires module:core.NodeComponent
+ * @memberof module:core
+ */
+class NodeManager {
+  constructor () {
+    /**
+     * Список всех нод.
+     * @type {Map&lt;module:node.NodeComponent>}
+     */
+    this.nodes = new Map()
+  }
+
+  /**
+   * Создать новую ноду.
+   * @param {Object} config - Конфигурация ноды
+   * @return {Promise&lt;module:core.NodeComponent>}
+   */
+  createNode (config) {
+    if (!nodeTypes[config.type]) {
+      return new Promise((resolve, reject) => reject(new Error(`Неопознаный тип ноды ${config.type}`)))
+    }
+    if (this.nodes.has(config.id)) {
+      return new Promise((resolve, reject) => reject(new Error(`Нода "${config.id}" уже существует`)))
+    }
+    const node = nodeTypes[config.type](config)
+    this.nodes.set(node.id, node)
+    return new Promise((resolve, reject) => resolve(node))
+  }
+
+  /**
+   * Удалить ноду.
+   * @param {String} nodeId - ID ноды
+   */
+  removeNode (nodeId) {
+    const node = this.nodes.get(nodeId)
+    if (!node) {
+      return false
+    }
+    node.beforeRemove()
+    node.stop()
+    node.remove()
+    this.nodes.delete(nodeId)
+  }
+
+  /**
+   * Миграция ноды.
+   * @param {String} nodeId - ID ноды
+   * @return {Promise&lt;Object>}
+   */
+  migrateNode (nodeId) {
+    const node = this.nodes.get(nodeId)
+    if (!node) {
+      return new Promise((resolve, reject) => reject(new Error('no node')))
+    }
+    const canMigrate = node.beforeMigrate()
+    if (!canMigrate) {
+      return new Promise((resolve, reject) => reject(new Error('no Migrate')))
+    }
+    node.stop()
+    const stateConfig = node.stateToConfig()
+    node.remove()
+    this.nodes.delete(nodeId)
+    return new Promise((resolve, reject) => resolve({
+      id: nodeId,
+      type: node.type,
+      stateConfig
+    }))
+  }
+
+  /**
+   * Расширить NodeComponent
+   * @param {String} nodeId - ID ноды
+   * @return {Promise&lt;Object>}
+   */
+  extend (componentConfig) {
+    console.log('extend')
+    return nodeConfig => new NodeComponent(nodeConfig, componentConfig)
+  }
+}
+
+export default new NodeManager()
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<footer>
+    <img class="logo" src="img/toast-ui.png" style="">
+    <div class="footer-text">Pikonet Server</div>
+</footer>
+<script>prettyPrint();</script>
+<script src="scripts/jquery.min.js"></script>
+<script src="scripts/tui-doc.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+    <script>
+        var id = '_sub'.replace(/"/g, '_');
+        var selectedApi = document.getElementById(id); // do not use jquery selector
+        var $selectedApi = $(selectedApi);
+
+        $selectedApi.removeClass('hidden');
+        $selectedApi.parent().find('.glyphicon').removeClass('glyphicon-plus').addClass('glyphicon-minus');
+        showLnbApi();
+    </script>
+
+</body>
+</html>
