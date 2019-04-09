@@ -15,5 +15,6 @@ export default {
    */
   nodeChannelList: 'nodeChannelList',
   nodeChannelUpdate: 'nodeChannelUpdate',
-  nodeMigrate: 'nodeMigrate'
+  nodeMigrate: 'nodeMigrate',
+  error: 'error'
 }

@@ -27,7 +27,6 @@ export default class WebSocketConnection extends Connection {
       } catch (error) {
         console.log(message.utf8Data)
         console.error(error)
-        wSocket.send('error')
       }
     })
     wSocket.on('close', () => this.destroy())

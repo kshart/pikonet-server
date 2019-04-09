@@ -46,7 +46,6 @@ export default class SocketConnection extends Connection {
               this.emit('message', data)
             } catch (error) {
               console.error(error, requests[i])
-              this.send('error')
             }
           }
           if (requests[requests.length - 1] !== '') {
@@ -72,6 +71,7 @@ export default class SocketConnection extends Connection {
    * @param {Object} data - Пакет.
    */
   send (data) {
+    console.log(SocketConnection.delimiter)
     this.socket.write(
       JSON.stringify(data) + SocketConnection.delimiter
     )

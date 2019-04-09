@@ -76,22 +76,22 @@ export default class Client extends EventEmitter {
    * Метод возвращает информацию о сервере
    * @see module:net.SERVER_CONNECT_RESULT
    */
-  onServerConnect () {
+  onServerConnect (params, { id }) {
     this.send(outputTypes.serverHello, {
       name: 'me',
       nodeTypeSupport: Object.keys(nodes),
       nodesCount: nodeManager.nodes.size
-    })
+    }, id)
   }
 
   /**
    * Метод возвращает список id нод.
    * @return {Array<String>} список id доступных нод
    */
-  onNodeGetList () {
+  onNodeGetList (params, { id }) {
     this.send(outputTypes.nodeList, {
       nodeIds: Array.from(nodeManager.nodes.keys())
-    })
+    }, id)
   }
 
   /**
@@ -127,6 +127,12 @@ export default class Client extends EventEmitter {
 
   onNodeGetChannelList ({ nodeId }, { id }) {
     const node = nodeManager.nodes.get(nodeId)
+    if (!node) {
+      this.send(outputTypes.error, {
+        message: `[server] node '${nodeId}' not found`,
+      }, id)
+      return
+    }
     this.send(outputTypes.nodeChannelList, {
       nodeId,
       channels: node.listChannel()
