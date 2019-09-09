@@ -24,9 +24,6 @@ describe('Server', () => {
         done()
       }, 1000)
     })
-    it('error', done => {
-      done()
-    })
     it('serverConnect', done => {
       nodeAPI.serverConnect()
         .then(({ name, nodeTypeSupport, nodesCount }) => {
@@ -44,19 +41,24 @@ describe('Server', () => {
           done()
         })
     })
-    it('nodeGetList', done => {
-      done()
-    })
     it('nodeCreate', done => {
       // ({ node })
-      done()
-    })
-    it('nodeUpdate', done => {
-      // ({ node })
+      nodeAPI.nodeCreate({
+        node: {
+          id: 'testNodeStatic1'
+        }
+      }).then(() => done())
       done()
     })
     it('nodeRemove', done => {
       // ({ nodeId })
+      done()
+    })
+    it('nodeGetList', done => {
+      done()
+    })
+    it('nodeUpdate', done => {
+      // ({ node })
       done()
     })
     it('nodeMigrate', done => {
@@ -73,7 +75,6 @@ describe('Server', () => {
           console.log(channels)
           done()
         })
-        .catch(err => done(err))
     })
     it('nodeChannelRead', done => {
       // ({ channelId })

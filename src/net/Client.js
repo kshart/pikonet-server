@@ -148,18 +148,23 @@ export default class Client extends EventEmitter {
   onNodeChannelSend ({ channelId, data }) {
     const channel = Channel.channels.get(channelId)
     channel.set(data)
-    // if (!channel.clients.has(this)) {
-    //   const { id, data } = channel
-    //   // this.send(outputTypes.nodeChannelUpdate, { channel })
-    // }
   }
 
-  onNodeChannelWatch ({ channelId }) {
-    const channel = Channel.channels.get(channelId)
-    channel.watch(this)
-    console.log(channel)
-    const { id, data } = channel
-    this.send(outputTypes.nodeChannelUpdate, { id, data })
+  onNodeChannelsSendData ({ channelsData }) {
+    for (let channelId in channelsData) {
+      const data = channelsData[channelId]
+      const channel = Channel.channels.get(channelId)
+      channel.set(data)
+    }
+  }
+
+  onNodeChannelsWatch ({ channelsId }) {
+    for (let channelId of channelsId) {
+      const channel = Channel.channels.get(channelId)
+      channel.watch(this)
+      const { id, data } = channel
+      this.send(outputTypes.nodeChannelUpdate, { id, data })
+    }
   }
 
   onNodeChannelUnwatch ({ channelId }) {

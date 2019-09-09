@@ -75,7 +75,7 @@ export default class Channel {
     }
     this.data = data
     for (let client of this.clients) {
-      client.send(outputTypes.NODE_CHANNEL_UPDATE, {
+      client.send(outputTypes.nodeChannelUpdate, {
         id: this.id,
         data
       })
