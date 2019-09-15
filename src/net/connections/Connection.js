@@ -8,7 +8,14 @@ import EventEmitter from 'events'
  */
 export default class Connection extends EventEmitter {
   /**
-   * Отправить пакет
+   * Имя соединения.
+   * @return {String} Имя соединения.
+   */
+  getName () {
+  }
+
+  /**
+   * Отправить пакет.
    * @param {Object} data пакет
    */
   send (data) {

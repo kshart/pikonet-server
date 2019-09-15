@@ -13,20 +13,11 @@ import WebSocketConnection from './connections/WebSocketConnection'
  */
 export default class Disposer {
   constructor ({ processName = 'default' }) {
-    /**
-     * Клиенты.
-     * @type {Set<net.Client>}
-     */
-    this.clients = new Set()
-
     this.processName = processName
 
     this.socketServer = net.createServer(socket => {
-      const client = new Client({
-        connection: new SocketConnection({ socket })
-      })
-      client.on('close', () => this.clients.delete(client))
-      this.clients.add(client)
+      const connection = new SocketConnection({ socket })
+      const client = new Client({ connection })
     }).on('error', err => {
       throw err
     })
@@ -38,8 +29,6 @@ export default class Disposer {
         const wSocket = request.accept(null, request.origin)
         const connection = new WebSocketConnection({ wSocket })
         const client = new Client({ connection })
-        client.on('close', () => this.clients.delete(client))
-        this.clients.add(client)
       })
   }
 

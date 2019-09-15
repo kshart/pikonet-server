@@ -61,9 +61,11 @@ export default class SocketConnection extends Connection {
   }
 
   /**
-   * Деструктор клиента.
+   * Имя соединения.
+   * @return {String} Имя соединения.
    */
-  destroy () {
+  getName () {
+    return `${this.socket.remoteAddress}:${this.socket.remotePort}`
   }
 
   /**

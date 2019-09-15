@@ -11,9 +11,14 @@ import EventEmitter from 'events'
  * @memberof net
  * @author Артём Каширин <kshart@yandex.ru>
  */
-export default class Client extends EventEmitter {
+export default class Client {
+  /**
+   * Клиенты.
+   * @type {Set<net.Client>}
+   */
+  static clients = new Set()
+
   constructor ({ connection }) {
-    super()
     /**
      * @type {net.connections.Connection}
      */
@@ -24,6 +29,8 @@ export default class Client extends EventEmitter {
       .on('message', message => this.handleRequest(message))
       .on('close', () => this.destroy())
       .on('error', error => console.log(error))
+
+    Client.clients.add(this)
   }
 
   /**
@@ -31,9 +38,14 @@ export default class Client extends EventEmitter {
    */
   destroy () {
     for (let [, channel] of Channel.channels) {
-      channel.clients.delete(this)
+      channel.unwatch(this)
     }
+    Client.clients.delete(this)
     console.log('Client destroy')
+  }
+
+  get name () {
+    return this.connection.getName()
   }
 
   /**
@@ -112,7 +124,7 @@ export default class Client extends EventEmitter {
   /**
    * Метод удаляет ноду из пул
    */
-  onNodeRemove ({ nodeId }) {
+  onNodeDeleted ({ nodeId }) {
     nodeManager.removeNode(nodeId)
   }
 
@@ -161,6 +173,10 @@ export default class Client extends EventEmitter {
   onNodeChannelsWatch ({ channelsId }) {
     for (let channelId of channelsId) {
       const channel = Channel.channels.get(channelId)
+      if (!channel) {
+        console.error(`Канал "${channelId}" не найден.`)
+        continue
+      }
       channel.watch(this)
       const { id, data } = channel
       this.send(outputTypes.nodeChannelUpdate, { id, data })
@@ -170,6 +186,6 @@ export default class Client extends EventEmitter {
   onNodeChannelUnwatch ({ channelId }) {
     const channel = Channel.channels.get(channelId)
     channel.unwatch(this)
-    // this.send(null)
   }
 }
+global.Client = Client

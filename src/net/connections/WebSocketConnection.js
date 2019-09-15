@@ -29,13 +29,15 @@ export default class WebSocketConnection extends Connection {
         console.error(error)
       }
     })
-    wSocket.on('close', () => this.destroy())
+    wSocket.on('close', () => this.emit('close'))
   }
 
   /**
-   * Деструктор клиента.
+   * Имя соединения.
+   * @return {String} Имя соединения.
    */
-  destroy () {
+  getName () {
+    return this.wSocket.remoteAddress
   }
 
   /**
