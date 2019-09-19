@@ -10,7 +10,7 @@ class NodeManager {
   constructor () {
     /**
      * Список всех нод.
-     * @type {Map<node.NodeComponent>}
+     * @type {Map<core.NodeComponent>}
      */
     this.nodes = new Map()
   }
@@ -27,6 +27,7 @@ class NodeManager {
     if (this.nodes.has(config.id)) {
       return new Promise((resolve, reject) => reject(new Error(`Нода "${config.id}" уже существует`)))
     }
+    console.log(`NodeManager.createNode ${config.type} ${config.id}`)
     const node = new nodeTypes[config.type](config)
     this.nodes.set(node.id, node)
     return new Promise((resolve, reject) => resolve(node))
@@ -39,12 +40,22 @@ class NodeManager {
   removeNode (nodeId) {
     const node = this.nodes.get(nodeId)
     if (!node) {
+      console.log(`NodeManager.removeNode: Нода ${nodeId} не найдена`)
       return false
     }
     node.beforeRemove()
     node.stop()
     node.remove()
     this.nodes.delete(nodeId)
+  }
+
+  updateNode (nodeId, config) {
+    const node = this.nodes.get(nodeId)
+    if (!node) {
+      console.log(`NodeManager.updateNode: Нода ${nodeId} не найдена`)
+      return false
+    }
+    node.update(config)
   }
 
   /**

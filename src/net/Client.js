@@ -117,8 +117,8 @@ export default class Client {
   /**
    * Обновить конфигурацию ноды.
    */
-  onNodeUpdate ({ node }) {
-    console.warn('Нет реализации')
+  onNodeUpdated ({ nodeId, node }) {
+    nodeManager.updateNode(nodeId, node)
   }
 
   /**

@@ -116,7 +116,7 @@ export default class NodeComponent {
   init () {
   }
 
-  update () {
+  update (config) {
   }
 
   remove () {

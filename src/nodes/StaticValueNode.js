@@ -39,8 +39,13 @@ export default class StaticValueNode extends NodeComponent {
   /**
    * @inheritdoc
    */
-  update () {
-    console.log('update')
+  update ({ value }) {
+    const channel = this.channels.get('value')
+    if (!channel) {
+      console.error('StaticValueNode: Ошибка записи в канал.')
+      return
+    }
+    channel.set(value)
   }
 
   /**
