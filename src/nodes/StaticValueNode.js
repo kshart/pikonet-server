@@ -54,18 +54,4 @@ export default class StaticValueNode extends NodeComponent {
   remove () {
     console.log('remove')
   }
-
-  /**
-   * @inheritdoc
-   */
-  start () {
-    console.log('start')
-  }
-
-  /**
-   * @inheritdoc
-   */
-  stop () {
-    console.log('stop')
-  }
 }

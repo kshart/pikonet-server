@@ -116,15 +116,13 @@ export default class NodeComponent {
   init () {
   }
 
+  /**
+   * Хук вызывается при обновлении ноды
+   * @param {Object} config - Новый конфиг
+   */
   update (config) {
   }
 
   remove () {
-  }
-
-  start () {
-  }
-
-  stop () {
   }
 }

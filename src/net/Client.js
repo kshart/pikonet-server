@@ -111,7 +111,11 @@ export default class Client {
    */
   onNodeCreate ({ node }) {
     nodeManager.createNode(node)
-      .then(node => node.start())
+      .then(node => node.init())
+      .catch(err => {
+        console.error(err)
+        // Отправить сообщение об ошибке
+      })
   }
 
   /**

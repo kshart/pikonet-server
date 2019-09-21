@@ -22,10 +22,10 @@ class NodeManager {
    */
   createNode (config) {
     if (!nodeTypes[config.type]) {
-      return new Promise((resolve, reject) => reject(new Error(`Неопознаный тип ноды ${config.type}`)))
+      return new Promise((resolve, reject) => reject(new Error(`NodeManager.createNode Неопознаный тип ноды ${config.type}`)))
     }
     if (this.nodes.has(config.id)) {
-      return new Promise((resolve, reject) => reject(new Error(`Нода "${config.id}" уже существует`)))
+      return new Promise((resolve, reject) => reject(new Error(`NodeManager.createNode Нода "${config.id}" уже существует`)))
     }
     console.log(`NodeManager.createNode ${config.type} ${config.id}`)
     const node = new nodeTypes[config.type](config)
@@ -66,11 +66,11 @@ class NodeManager {
   migrateNode (nodeId) {
     const node = this.nodes.get(nodeId)
     if (!node) {
-      return new Promise((resolve, reject) => reject(new Error('no node')))
+      return new Promise((resolve, reject) => reject(new Error(`NodeManager.migrateNode Нода "${nodeId}" не найдена`)))
     }
     const canMigrate = node.beforeMigrate()
     if (!canMigrate) {
-      return new Promise((resolve, reject) => reject(new Error('no Migrate')))
+      return new Promise((resolve, reject) => reject(new Error(`NodeManager.migrateNode Нода "${nodeId}" не может мигрировать`)))
     }
     node.stop()
     const stateConfig = node.stateToConfig()
