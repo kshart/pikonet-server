@@ -1,4 +1,5 @@
 import outputTypes from '@/net/outputTypes'
+import EventEmitter from 'events'
 
 /**
  * Конфигурация для создания канала.
@@ -16,13 +17,14 @@ import outputTypes from '@/net/outputTypes'
  * @memberof core
  * @author Артём Каширин <kshart@yandex.ru>
  */
-export default class Channel {
+export default class Channel extends EventEmitter {
   static channels = new Map()
 
   /**
    * @param {core.ChannelConfig} config - Конфигурация канала.
    */
   constructor ({ node, name, writable = false, data = null }) {
+    super()
     this.id = `${node.id}/${name}`
 
     /**
@@ -43,19 +45,14 @@ export default class Channel {
      */
     this.writable = !!writable
 
-    /**
-     * Список клиентов подписаных на обновление канала.
-     * @type {Set<net.Client>}
-     */
-    this.clients = new Set()
-
     Channel.channels.set(this.id, this)
   }
 
   /**
    * Деструктор канала.
    */
-  destroy () {
+  destructor () {
+    this.removeAllListeners('change')
     Channel.channels.delete(this.id)
   }
 
@@ -74,28 +71,12 @@ export default class Channel {
       return
     }
     this.data = data
-    for (let client of this.clients) {
-      client.send(outputTypes.nodeChannelUpdate, {
-        id: this.id,
+    if (this.listenerCount('change') > 0) {
+      this.emit('change', {
+        channelId: this.id,
         data
       })
     }
-  }
-
-  /**
-   * Подписка на изменение данных в канале
-   * @param {net.Client} client внешний клиент
-   */
-  watch (client) {
-    this.clients.add(client)
-  }
-
-  /**
-   * Отписка от изменения данных в канале
-   * @param {net.Client} client внешний клиент
-   */
-  unwatch (client) {
-    this.clients.delete(client)
   }
 
   toJson () {

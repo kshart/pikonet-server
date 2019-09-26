@@ -2,7 +2,6 @@ import nodes from '@/nodes/index'
 import Channel from '@/core/Channel'
 import outputTypes from './outputTypes'
 import nodeManager from '@/core/NodeManager'
-import EventEmitter from 'events'
 
 /**
  * Класс предназначен для общения по сокету с клиентами.
@@ -19,6 +18,12 @@ export default class Client {
   static clients = new Set()
 
   constructor ({ connection }) {
+    this.serverChannelUpdate = ({ channelId, data }) => {
+      this.send(outputTypes.nodeChannelUpdate, {
+        id: channelId,
+        data
+      })
+    }
     /**
      * @type {net.connections.Connection}
      */
@@ -27,7 +32,7 @@ export default class Client {
     connection
       .on('connect', () => console.log('connect'))
       .on('message', message => this.handleRequest(message))
-      .on('close', () => this.destroy())
+      .on('close', () => this.destructor())
       .on('error', error => console.log(error))
 
     Client.clients.add(this)
@@ -36,14 +41,17 @@ export default class Client {
   /**
    * Деструктор клиента.
    */
-  destroy () {
+  destructor () {
     for (let [, channel] of Channel.channels) {
-      channel.unwatch(this)
+      channel.off('change', this.serverChannelUpdate)
     }
     Client.clients.delete(this)
-    console.log('Client destroy')
+    console.log('Client destructor')
   }
 
+  /**
+   * Имя соединения.
+   */
   get name () {
     return this.connection.getName()
   }
@@ -66,7 +74,11 @@ export default class Client {
 
   /**
    * Обработать запрос
-   * @param {Object} request Запрос.
+   * @param {Object} request - Запрос.
+   * @param {String} request.id - ID запроса.
+   * @param {String} request.requestId
+   * @param {String} request.method - Имя метода.
+   * @param {Object} request.params - Параметры метода.
    */
   handleRequest ({ id, requestId, method, params }) {
     const methodName = 'on' + method.capitalize()
@@ -78,7 +90,7 @@ export default class Client {
   }
 
   /**
-   * Ошибка
+   * Ошибка на клиенте
    */
   onError () {
     console.log('error')
@@ -86,7 +98,6 @@ export default class Client {
 
   /**
    * Метод возвращает информацию о сервере
-   * @see module:net.SERVER_CONNECT_RESULT
    */
   onServerConnect (params, { id }) {
     this.send(outputTypes.serverHello, {
@@ -98,7 +109,7 @@ export default class Client {
 
   /**
    * Метод возвращает список id нод.
-   * @return {Array<String>} список id доступных нод
+   * @return {Array<String>} - список id доступных нод
    */
   onNodeGetList (params, { id }) {
     this.send(outputTypes.nodeList, {
@@ -108,6 +119,8 @@ export default class Client {
 
   /**
    * Метод добавляет ноду в пул.
+   * @param {Object} conf
+   * @param {Object} conf.node - Конфигурация Ноды.
    */
   onNodeCreate ({ node }) {
     nodeManager.createNode(node)
@@ -120,6 +133,9 @@ export default class Client {
 
   /**
    * Обновить конфигурацию ноды.
+   * @param {Object} conf
+   * @param {String} conf.nodeId - ID Ноды.
+   * @param {Object} conf.node - Конфигурация Ноды.
    */
   onNodeUpdated ({ nodeId, node }) {
     nodeManager.updateNode(nodeId, node)
@@ -127,13 +143,18 @@ export default class Client {
 
   /**
    * Метод удаляет ноду из пул
+   * @param {Object} conf
+   * @param {String} conf.nodeId - ID Ноды.
    */
   onNodeDeleted ({ nodeId }) {
     nodeManager.removeNode(nodeId)
   }
 
   /**
-   * Метод мигрирует ноду.
+   * Мигрировать ноду.
+   * @TODO написать миграцию
+   * @param {Object} conf
+   * @param {String} conf.nodeId - ID Ноды.
    */
   onNodeMigrate ({ nodeId }) {
     nodeManager.migrateNode(nodeId)
@@ -141,6 +162,13 @@ export default class Client {
       .catch(err => console.log(err))
   }
 
+  /**
+   * Получить список каналов у ноды.
+   * @param {Object} conf
+   * @param {String} conf.nodeId - ID Ноды.
+   * @param {Object} request
+   * @param {String} request.id - ID Запроса.
+   */
   onNodeGetChannelList ({ nodeId }, { id }) {
     const node = nodeManager.nodes.get(nodeId)
     if (!node) {
@@ -155,17 +183,33 @@ export default class Client {
     }, id)
   }
 
+  /**
+   * Прочитать данные из канала.
+   * @param {Object} conf
+   * @param {String} conf.channelId - ID канала.
+   */
   onNodeChannelRead ({ channelId }) {
     const channel = Channel.channels.get(channelId)
     const { id, data } = channel
     this.send(outputTypes.nodeChannelUpdate, { id, data })
   }
 
+  /**
+   * Отправить данные в канал.
+   * @param {Object} conf
+   * @param {String} conf.channelId - ID канала.
+   * @param {any} conf.data - данные для записи.
+   */
   onNodeChannelSend ({ channelId, data }) {
     const channel = Channel.channels.get(channelId)
     channel.set(data)
   }
 
+  /**
+   * Отправить данные в каналы.
+   * @param {Object} conf
+   * @param {Map<String, any>} conf.channelsData - ID канала и данные для записи.
+   */
   onNodeChannelsSendData ({ channelsData }) {
     for (let channelId in channelsData) {
       const data = channelsData[channelId]
@@ -174,6 +218,11 @@ export default class Client {
     }
   }
 
+  /**
+   * Зарегистрировать надсмотрщики над каналами.
+   * @param {Object} conf
+   * @param {Array<String>} conf.channelsId - Список ID каналов.
+   */
   onNodeChannelsWatch ({ channelsId }) {
     for (let channelId of channelsId) {
       const channel = Channel.channels.get(channelId)
@@ -181,15 +230,26 @@ export default class Client {
         console.error(`Канал "${channelId}" не найден.`)
         continue
       }
-      channel.watch(this)
+      channel.on('change', this.serverChannelUpdate)
       const { id, data } = channel
       this.send(outputTypes.nodeChannelUpdate, { id, data })
     }
   }
 
-  onNodeChannelUnwatch ({ channelId }) {
-    const channel = Channel.channels.get(channelId)
-    channel.unwatch(this)
+  /**
+   * Отписать надсмотрщики от каналов.
+   * @param {Object} conf
+   * @param {Array<String>} conf.channelsId - Список ID каналов.
+   */
+  onNodeChannelsUnwatch ({ channelsId }) {
+    for (let channelId of channelsId) {
+      const channel = Channel.channels.get(channelId)
+      if (!channel) {
+        console.error(`Канал "${channelId}" не найден.`)
+        continue
+      }
+      channel.off('change', this.serverChannelUpdate)
+    }
   }
 }
 global.Client = Client

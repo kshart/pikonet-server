@@ -76,7 +76,7 @@ export default class NodeComponent {
   removeChannel (name) {
     const channel = this.channels.get(name)
     this.channels.delete(name)
-    channel.destroy()
+    channel.destructor()
     return true
   }
 
@@ -123,6 +123,6 @@ export default class NodeComponent {
   update (config) {
   }
 
-  remove () {
+  destructor () {
   }
 }

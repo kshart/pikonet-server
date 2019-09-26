@@ -32,6 +32,9 @@ export default class Disposer {
       })
   }
 
+  /**
+   * Запустить сервер.
+   */
   run () {
     this.socketServer.listen(
       {
@@ -49,6 +52,9 @@ export default class Disposer {
     )
   }
 
+  /**
+   * Остановить сервер.
+   */
   stop () {
     this.wsServer.shutDown()
     this.httpServer.close()

@@ -25,7 +25,7 @@ export default class StaticValueNode extends NodeComponent {
    * @inheritdoc
    */
   beforeMigrate () {
-    console.log('beforeMigrate')
+    console.log('StaticValueNode beforeMigrate')
     return true
   }
 
@@ -33,7 +33,7 @@ export default class StaticValueNode extends NodeComponent {
    * @inheritdoc
    */
   beforeRemove () {
-    console.log('beforeRemove')
+    console.log('StaticValueNode beforeRemove')
   }
 
   /**
@@ -51,7 +51,7 @@ export default class StaticValueNode extends NodeComponent {
   /**
    * @inheritdoc
    */
-  remove () {
-    console.log('remove')
+  destructor () {
+    console.log('StaticValueNode destructor')
   }
 }

@@ -45,7 +45,7 @@ class NodeManager {
     }
     node.beforeRemove()
     node.stop()
-    node.remove()
+    node.destructor()
     this.nodes.delete(nodeId)
   }
 
@@ -74,7 +74,7 @@ class NodeManager {
     }
     node.stop()
     const stateConfig = node.stateToConfig()
-    node.remove()
+    node.destructor()
     this.nodes.delete(nodeId)
     return new Promise((resolve, reject) => resolve({
       id: nodeId,
